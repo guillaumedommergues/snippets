@@ -2,6 +2,8 @@
 # The online documentation is wonderful. There are plenty of great blogs and tutorials to learn
 # This is meant as a cheatcheet for my colleagues as these are the most common operations in our current positions
 
+import pandas as pd
+import numpy as np
 
 # read an excel file
 data=pd.read_excel("data.xlsx", sheetname="Sheet1") #sheet_name on more recent pandas versions
@@ -11,6 +13,21 @@ print (data.info())
 
 # convert the type of a column
 data['Fare'] = data['Fare'].astype(int)
+
+# edit a cell
+data.at[1,'Fare']=12 # where 1 is the index
+
+# initialize a new column with 0 values
+data['new_column']=0
+
+# Assign variables to that new column based on simple conditions
+data.loc[data['Fare']==0,'new_column']=1
+
+# Assign variables to that new column based on complex conditions
+conditions=[(data['Fare']==12 & Data['Distance]>100),
+            (data['Fare']==1 & Data['Distance]<=10)]
+choices=[4,7]
+data['new_column'] = np.select(conditions, choices, default=1)
 
 # normalizing variables
 features_to_normalize = ['Distance', 'Duration', 'Fare']
