@@ -46,6 +46,11 @@ for each in features_to_normalize:
 nsf=nsf.groupby(by=["Distance","Duration"]).agg({"Fare":"sum"})
 nsf=nsf.reset_index()
 
+# one hot encoding
+data['Weekday']=data['Date'].apply(lambda x: x.weekday())
+data=pd.concat([data, pd.get_dummies(data['Weekday'], prefix='d')], axis=1)
+data=data.drop(['Weekday'], axis=1)
+                                    
 # Split off random 10% of the data for testing
 np.random.seed(21)
 sample = np.random.choice(data.index, size=int(len(data)*0.9), replace=False)
