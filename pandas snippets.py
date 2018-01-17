@@ -5,9 +5,13 @@
 import pandas as pd
 import numpy as np
 
-# read an excel file
+# read an excel/csv file
 data=pd.read_excel("data.xlsx", sheetname="Sheet1") #sheet_name on more recent pandas versions
-
+data=pd.read_csv("data/data.csv", 
+                 skiprows=1, #rows to skip
+                 parse_dates=[1], #columns to parse as datetime objects
+                 names=["Fare","Date","Distance","Duration"] #new columns names
+                 )
 # get general info about the dataframe
 print (data.info())
 
