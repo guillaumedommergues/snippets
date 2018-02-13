@@ -13,7 +13,8 @@ data=pd.read_csv("data/data.csv",
                  names=["Fare","Date","Distance","Duration"] #new columns names
                  )
 # get general info about the dataframe
-print (data.info())
+data.info()
+data.describe()
 
 # convert the type of a column
 data['Fare'] = data['Fare'].astype(int)
@@ -23,6 +24,14 @@ data.at[1,'Fare']=12 # where 1 is the index
 
 # initialize a new column with 0 values
 data['new_column']=0
+
+# creating a column with the quantiles (here deciles) of another column
+data['fare_deciles']=pd.qcut(data['Fare'], 10, labels=False)
+
+# you can then export the quantils if you wish
+quantiles=data.groupby(by=['fare_deciles']).agg({'Fare':np.max})
+quantiles.to_excel('quantiles.xlsx')
+
 
 # Assign variables to that new column based on simple conditions
 data.loc[data['Fare']==0,'new_column']=1
