@@ -1,17 +1,19 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 03 09:03:26 2018
 
-@author: 58103
-"""
+# purpose: illustrate how use known probability distribution in python
+# part of a series of lessons taught at Bank of Hawaii, 2017-2018
 
 from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as st
 
-#%%
-# randomly generate data following a probability distribution - here uniform
+#%%############################################################################
+##################### generate data following a given distribution ############
+###############################################################################
+
+# call the uniform distribution
+# distributions typically take a location and a sclae parameters.
+# some have other parameters. 
 data=st.uniform.rvs(loc=0,scale=1,size=100)
 # plot the data
 plt.hist(data, bins=10, normed=True)
@@ -22,7 +24,10 @@ plt.plot(x_data, pdf)
 plt.xlim([0,1])
 plt.show()
 
-#%%
+#%%############################################################################
+##################### check which distribution modelizes a sample #############
+###############################################################################
+
 # repeat the experience 100 times and store the sum of the results
 data_repeat=[st.uniform.rvs(loc=0,scale=1,size=1000).sum() for _ in range(0,100)]    
 # let's see which distribution best represents this experience
