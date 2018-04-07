@@ -1,10 +1,10 @@
-# Notes for myself on how to use the Google Cloud for web applications
-# All this can be found on the Google Cloud documentation. This aims to be a collection of the most necessary and useful snippets 
-# Links are provided for more information
 
-########################
-# app.yaml file
-########################
+# purpose: illustrate some common routines for web apps running on Google Cloud
+# part of a series of lessons taught at Bank of Hawaii, 2017-2018
+
+###############################################################################
+###################### app.yaml file ##########################################
+###############################################################################
 
 # This file specifies how the app will run
 # https://cloud.google.com/appengine/docs/standard/python/config/appref
@@ -14,12 +14,15 @@ api_version: 1
 threadsafe: yes
 
 # explains where the app object resides
+# assuming that you are developing in Flask 
+# assuming that the app = Flask(__name__) is in a file in the /myapp folder
 handlers:
 - url: .*  # This regex directs all routes to main.app
-  script: my_app.app #assuming that you are developing in Flask and the app = Flask(__name__) is in a .py file in the /myapp folder
+  script: my_app.app 
 
 # libraries that do not use 100% Python need to be imported here 
-# list of available libraries here: https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27
+# list of available libraries here:
+# https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27
 libraries:
 - name: numpy
   version: "latest"
@@ -37,12 +40,14 @@ automatic_scaling:
   max_concurrent_requests: 50
 
 
-############################
-# appengine_config.py file
-############################
+###############################################################################
+###################### appengine_config.py file ###############################
+###############################################################################
 
-# pure python libraries do not need to be imported in the app.yaml file and usually cannot
-# install them in a /lib folder and vedor them in the app with this appengine_config.py file
+# pure python libraries do not need to be imported in the app.yaml file
+# install them in a /lib folder 
+# and vedor them in the app with this appengine_config.py file
+# more info here:
 # https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27
 from google.appengine.ext import vendor
 import os
@@ -52,11 +57,11 @@ if on_appengine and os.name == 'nt':
   sys.platform = "Not Windows"
 vendor.add('lib')
 
-############################
-# using Google Storage
-############################
+###############################################################################
+###################### using Google Cloud Storage #############################
+###############################################################################
 
-# great to store files, pictures, videos, etc
+# Google Cloud Storage is the place to store files, pictures, videos, etc
 # uploading files
 from google.cloud import storage
 def upload_file_to_Google_storage(file,filename,size):
@@ -74,14 +79,17 @@ def delete_file_to_Google_storage(blob_name):
   blob = bucket.blob(blob_name)
   blob.delete()
 
-############################
-# using the Google Datastore
-############################
+###############################################################################
+###################### using the Google Datastore #############################
+###############################################################################
 
-# great to store non-relational data - free for limited usage 
+# the Google Datastore is a tool to store non-relational data
+# it is free for limited usage 
 # data is stored in groups called "kinds"
-# each object in the Datastore is called an "entity" and it is uniquely identified by a "key"
-# each entity has several fields called "properties" that can be of virtually any type
+# each object in the Datastore is called an "entity" 
+# each entity is uniquely identified by a "key"
+# each entity has several fields called "properties" 
+# properties can be of virtually any type - strings, lists, dicts, etc....
 # not a good choice for relational data - use the Cloud SQL instead
 
 from google.cloud import datastore
@@ -95,7 +103,9 @@ class marker_kind(ndb.Model):
   markerValue = ndb.FloatProperty()
 
 # creating an entity 
-p = marker_kind(markerTitle='my title',markerDescription='my description', markerValue=1)
+p = marker_kind(markerTitle='my title',
+                markerDescription='my description',
+                markerValue=1)
 p.put() 
 
 # updating a value
@@ -106,28 +116,32 @@ p.put()
 k=p.key
 
 # a key consists of a kind and an ID 
-# can be useful to send a unique identifier as string from client to server for instance
+# can be useful to send a unique identifier as string from client to server 
 my_id=p.key.id()
 my_kind=p.key.kind()
 
 # listing all entities in a kind
 marker_list=marker_kind.query()
 
-# querying a kind with some criteria (here the first 10 entities with the markerTitle 'my title')
+# querying a kind with some criteria
+# here the first 10 entities with the markerTitle 'my title'
 my_markers=marker_kind.query(marker_kind.markerTitle =='my title').fetch(10)
 
 # deleting an entity - if you know the key k
 k.delete()
 
 
-##################################
-# linking an app to Google Cloud
-##################################
+###############################################################################
+###################### linking an app to Google Cloud SQL #####################
+###############################################################################
 
+# SQL tables can be used via Google Cloud SQL 
+# and connected to an app running on the Google App Engine
 # assuming a Flask App connected to a MySQL database in the backend
-# create the database, the user name, the password on the console like so
+# more info on creating the database/user name/password here:
 # https://cloud.google.com/sql/docs/mysql/quickstart
 # https://cloud.google.com/python/getting-started/using-cloud-sql
+# connection name will be similar to project-name:us-central1:database-name'
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -137,7 +151,7 @@ app = Flask(__name__)
 CLOUDSQL_USER = 'root'
 CLOUDSQL_PASSWORD = 'your_password'
 CLOUDSQL_DATABASE = 'your_database_name'
-CLOUDSQL_CONNECTION_NAME = 'your_connection_name' # something like project-name:us-central1:database-name'
+CLOUDSQL_CONNECTION_NAME = 'your_connection_name'
 LIVE_SQLALCHEMY_DATABASE_URI = (
     'mysql://{user}:{password}@localhost/{database}'
     '?unix_socket=/cloudsql/{connection_name}').format(
