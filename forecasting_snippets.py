@@ -1,5 +1,5 @@
-""" purpose: illustrate different methods to forecast time series data
-part of a series of lessons taught at Bank of Hawaii, 2017-2018
+""" Purpose: illustrate different methods to forecast time series data
+Part of a series of lessons taught at Bank of Hawaii, 2017-2018
 
 """
 
