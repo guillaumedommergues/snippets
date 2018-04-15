@@ -1,35 +1,33 @@
+""" Purpose: illustrate how use known probability distribution in python
+Part of a series of lessons taught at Bank of Hawaii, 2017-2018
 
-# purpose: illustrate how use known probability distribution in python
-# part of a series of lessons taught at Bank of Hawaii, 2017-2018
+"""
 
 from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as st
 
-#%%############################################################################
-##################### generate data following a given distribution ############
-###############################################################################
+#%% generate data following a given distribution ##############################
 
 # call the uniform distribution
 # distributions typically take a location and a sclae parameters.
 # some have other parameters. 
-data=st.uniform.rvs(loc=0,scale=1,size=100)
+data = st.uniform.rvs(loc=0,scale=1,size=100)
 # plot the data
 plt.hist(data, bins=10, normed=True)
 # plot the distribution
-x_data=np.linspace(0,1,11)
-pdf=st.uniform.pdf(x=x_data, loc=0, scale=1 )
+x_data = np.linspace(0,1,11)
+pdf = st.uniform.pdf(x=x_data, loc=0, scale=1 )
 plt.plot(x_data, pdf)
 plt.xlim([0,1])
 plt.show()
 
-#%%############################################################################
-##################### check which distribution modelizes a sample #############
-###############################################################################
+#%% check which distribution modelizes a sample ###############################
 
 # repeat the experience 100 times and store the sum of the results
-data_repeat=[st.uniform.rvs(loc=0,scale=1,size=1000).sum() for _ in range(0,100)]    
+data_repeat = [st.uniform.rvs(loc=0,scale=1,size=1000).sum()
+               for _ in range(0,100)]    
 # let's see which distribution best represents this experience
 # the central limit theorem proves that the distribution will tend to be normal
 # if we repeat it enough times. Is it true for a small sample of 100 repeats?
@@ -38,23 +36,23 @@ data_repeat=[st.uniform.rvs(loc=0,scale=1,size=1000).sum() for _ in range(0,100)
 # and see which one is the closest by comparing the mean squared error
 
 # Step 1 - create the empirical cumulative distribution function
-x_observed, y_observed=np.unique(data_repeat, return_counts=True)
-y_observed_normed=y_observed/np.sum(y_observed)
-y_observed_cumulative=np.cumsum(y_observed_normed)
+x_observed, y_observed = np.unique(data_repeat, return_counts=True)
+y_observed_normed = y_observed/np.sum(y_observed)
+y_observed_cumulative = np.cumsum(y_observed_normed)
 
 # Step 2 - try a few distributions
 DISTRIBUTIONS = [st.rayleigh, st.norm, st.uniform, st.cauchy]
 DISTRIBUTIONS = [ st.norm]
-best_error=np.inf
+best_error = np.inf
 for distribution in DISTRIBUTIONS:
-    params=distribution.fit(data_repeat)
-    y_theory_cum=distribution.cdf(x_observed, *params)
-    mse=np.mean(np.power(y_observed_cumulative-y_theory_cum,2))
+    params = distribution.fit(data_repeat)
+    y_theory_cum = distribution.cdf(x_observed, *params)
+    mse = np.mean(np.power(y_observed_cumulative-y_theory_cum,2))
     if mse<best_error:
-        best_error=mse
-        best_dist=distribution
-        best_params=params
-        best_cum_dist=y_theory_cum
+        best_error = mse
+        best_dist = distribution
+        best_params = params
+        best_cum_dist = y_theory_cum
 
 # Step 3 - plot the observed vs fitted cumulative distribution
 plt.figure(figsize=(6,8))
@@ -68,7 +66,7 @@ plt.title('cumulative density functions')
 # Step 4 - plot the observed vs fitted cumulative distribution
 plt.subplot(2,1,2)
 plt.hist(x_observed, bins=20, normed=True)
-pdf=best_dist.pdf(x_observed,*best_params)
+pdf = best_dist.pdf(x_observed,*best_params)
 plt.plot(x_observed,pdf)
 plt.title('probability density functions')
 plt.subplots_adjust(top=0.85)
